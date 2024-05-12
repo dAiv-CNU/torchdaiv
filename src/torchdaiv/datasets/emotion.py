@@ -48,7 +48,7 @@ class EmotionDataset(Dataset):
             self.general_text.append(d['RawText'])
             self.general_label.append(int(d['GeneralPolarity']))
             for ae in d['Aspects']:
-                self.sentiment_text.append(ae['RawText'])
+                self.sentiment_text.append(ae['SentimentText'])
                 self.sentiment_label.append(int(ae['SentimentPolarity']))
 
         self.data = self.sentiment_text if sentiment else self.general_text
@@ -88,7 +88,7 @@ class EmotionDataset(Dataset):
     def _load_data(self, data_dir):
         data = []
         for path in listdir(data_dir):
-            with open(join(data_dir, path), 'r') as f:
+            with open(join(data_dir, path), "r", encoding="UTF-8") as f:
                 data.extend(loads(f.read()))
         return data
 
