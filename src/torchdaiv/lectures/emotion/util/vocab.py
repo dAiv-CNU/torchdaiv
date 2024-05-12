@@ -34,12 +34,13 @@ class Vocabulary(dict):
         return super().get(key, default)
 
 
-def vocabulary_creator() -> tuple[Vocabulary, Callable]:
+def vocabulary_creator(minimum_frequency=5) -> tuple[Vocabulary, Callable]:
     new_vocab = Vocabulary()
 
-    def convert(data: list[str], minimum_frequency=5) -> list[str]:
+    def convert(data: list[str]) -> list[str]:
         data = [word for line in data for word in line.split()]
-        frequency_filtered = filter(lambda x: x[1] > minimum_frequency, Counter(data))
+        frequency = Counter(data)
+        frequency_filtered = filter(lambda x: frequency[x] >= minimum_frequency, frequency)
         return list(set(frequency_filtered))
 
     def to_vocabulary(data: list[str]):
