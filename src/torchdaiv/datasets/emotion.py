@@ -31,7 +31,7 @@ class EmotionDataset(Dataset):
         NEUTRAL = 0
         NEGATIVE = -1
 
-        def __str__(self):
+        def __repr__(self):
             if self >= self.POSITIVE:
                 return "긍정"
             elif self == self.NEUTRAL:
