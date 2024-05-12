@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 from glob import glob
 
 
@@ -9,7 +9,7 @@ setup(
     author="daiv",
     author_email="cnudaiv@gmail.com",
     url="https://github.com/dAiv-CNU/torchdaiv",
-    packages=list(set(['/'.join(path.removesuffix(".py").split('/')[:-1]) for path in glob("**/*.py", recursive=True)])),
+    packages=list(set(['/'.join(path.removesuffix(".py").replace("\\", "/").split('/')[:-1]) for path in glob("**/*.py", recursive=True)])),
     install_requires=[
         "torch",
         "torchvision",
