@@ -26,6 +26,19 @@ class EmotionDataset(Dataset):
     )
     work_dir = "extracted"
 
+    class Emotion(int):
+        POSITIVE = 1
+        NEUTRAL = 0
+        NEGATIVE = -1
+
+        def __str__(self):
+            if self >= self.POSITIVE:
+                return "긍정"
+            elif self == self.NEUTRAL:
+                return "중도"
+            else:
+                return "부정"
+
     def __init__(self, root: str, download=False, train=True, sentiment=False, transform=None, target_transform=None):
         super(EmotionDataset, self).__init__()
 
@@ -47,12 +60,12 @@ class EmotionDataset(Dataset):
         for d in self.jsons:
             if 'RawText' in d and 'GeneralPolarity' in d:
                 self.general_text.append(d['RawText'])
-                self.general_label.append(int(d['GeneralPolarity']))
+                self.general_label.append(self.Emotion(d['GeneralPolarity']))
             if 'Aspects' in d:
                 for ae in d['Aspects']:
                     if 'SentimentText' in ae and 'SentimentPolarity' in ae:
                         self.sentiment_text.append(ae['SentimentText'])
-                        self.sentiment_label.append(int(ae['SentimentPolarity']))
+                        self.sentiment_label.append(self.Emotion(ae['SentimentPolarity']))
 
         self.data = self.sentiment_text if sentiment else self.general_text
         self.label = self.sentiment_label if sentiment else self.general_label
