@@ -9,7 +9,7 @@ setup(
     author="daiv",
     author_email="cnudaiv@gmail.com",
     url="https://github.com/dAiv-CNU/torchdaiv",
-    packages=find_packages(),
+    packages=find_packages("src/main"),
     install_requires=[
         "torch",
         "torchvision",
