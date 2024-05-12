@@ -95,14 +95,20 @@ class EmotionDataset(Dataset):
         self.data = self.sentiment_text if sentiment else self.general_text
         self.label = self.sentiment_label if sentiment else self.general_label
 
+        self._transform(transform, target_transform)
+
+    def __getitem__(self, item):
+        return self.data[item], self.label[item]
+
+    def __len__(self):
+        return len(self.data)
+
+    def _transform(self, transform=None, target_transform=None):
         if transform is not None:
             self.data = transform(self.data)
 
         if target_transform is not None:
             self.label = target_transform(self.label)
-
-    def __getitem__(self, item):
-        return self.data[item], self.label[item]
 
     def _download(self, download_root):
         download_and_extract_archive(self.url, download_root)

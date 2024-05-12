@@ -3,6 +3,12 @@ from __future__ import annotations
 from typing import Callable
 from collections import Counter
 
+import re
+
+
+def split_string(s):
+    return re.findall(r'\b\w+\b|[\.,;!\?\-+*/]', s)
+
 
 class Vocabulary(dict):
     PAD = "<PAD>"
@@ -38,7 +44,7 @@ def vocabulary_creator(minimum_frequency=5) -> tuple[Vocabulary, Callable]:
     new_vocab = Vocabulary()
 
     def convert(data: list[str]) -> list[str]:
-        data = [word for line in data for word in line.split()]
+        data = [word for line in data for word in split_string(line)]
         frequency = Counter(data)
         frequency_filtered = filter(lambda x: frequency[x] >= minimum_frequency, frequency)
         return list(set(frequency_filtered))
