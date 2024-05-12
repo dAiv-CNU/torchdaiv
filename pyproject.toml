@@ -6,8 +6,8 @@ authors = ["dAiv <cnudaiv@gmail.com>"]
 license = "MIT License"
 readme = "README.md"
 packages = [
-    {include = "datasets", from = "src.main"},
-    {include = "lecture", from = "src.main"}
+    {include = "datasets", from = "src/main"},
+    {include = "lecture", from = "src/main"}
 ]
 
 [tool.poetry.dependencies]
