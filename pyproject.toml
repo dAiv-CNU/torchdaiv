@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "torchdaiv"
+version = "1.0.0"
+description = "PyTorch Wrapper for dAiv's lecture"
+authors = ["dAiv <cnudaiv@gmail.com>"]
+license = "MIT License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+torch = "^2.3.0"
+torchvision = "^0.18.0"
+tqdm = "^4.66.4"
+rich = "^13.7.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
