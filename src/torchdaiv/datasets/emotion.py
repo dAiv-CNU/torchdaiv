@@ -45,11 +45,14 @@ class EmotionDataset(Dataset):
         self.sentiment_label = []
 
         for d in self.jsons:
-            self.general_text.append(d['RawText'])
-            self.general_label.append(int(d['GeneralPolarity']))
-            for ae in d['Aspects']:
-                self.sentiment_text.append(ae['SentimentText'])
-                self.sentiment_label.append(int(ae['SentimentPolarity']))
+            if 'RawText' in d and 'GeneralPolarity' in d:
+                self.general_text.append(d['RawText'])
+                self.general_label.append(int(d['GeneralPolarity']))
+            if 'Aspects' in d:
+                for ae in d['Aspects']:
+                    if 'SentimentText' in ae and 'SentimentPolarity' in ae:
+                        self.sentiment_text.append(ae['SentimentText'])
+                        self.sentiment_label.append(int(ae['SentimentPolarity']))
 
         self.data = self.sentiment_text if sentiment else self.general_text
         self.label = self.sentiment_label if sentiment else self.general_label
