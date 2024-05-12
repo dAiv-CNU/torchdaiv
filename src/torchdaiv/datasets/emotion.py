@@ -36,7 +36,8 @@ class EmotionDataset(Dataset):
         @staticmethod
         def __new__(cls, *args, **kwargs):
             args = list(args)
-            args[0] = 1 if args[0] >= 1 else -1 if args[0] <= -1 else 0
+            value = int(args[0])
+            args[0] = 1 if value >= 1 else -1 if value <= -1 else 0
             return super().__new__(cls, *args, **kwargs)
 
         def __add__(self, other):
