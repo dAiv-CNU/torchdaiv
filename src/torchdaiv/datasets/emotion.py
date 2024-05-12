@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from torch.utils.data import Dataset
 from torchvision.datasets.utils import download_and_extract_archive
 
@@ -31,6 +33,18 @@ class EmotionDataset(Dataset):
         NEUTRAL = 0
         NEGATIVE = -1
 
+        def __add__(self, other):
+            return EmotionDataset.Emotion(super().__add__(other % 2) % 2)
+
+        def __sub__(self, other):
+            return EmotionDataset.Emotion(super().__sub__(other % 2) % 2)
+
+        def __mul__(self, other):
+            return EmotionDataset.Emotion(super().__mul__(other % 2) % 2)
+
+        def __truediv__(self, other):
+            return EmotionDataset.Emotion(super().__truediv__(other % 2) % 2)
+
         def __repr__(self):
             if self >= self.POSITIVE:
                 return "긍정"
@@ -38,6 +52,10 @@ class EmotionDataset(Dataset):
                 return "중도"
             else:
                 return "부정"
+
+    Emotion.POSITIVE = Emotion(1)
+    Emotion.NEUTRAL = Emotion(0)
+    Emotion.NEGATIVE = Emotion(-1)
 
     def __init__(self, root: str, download=False, train=True, sentiment=False, transform=None, target_transform=None):
         super(EmotionDataset, self).__init__()
