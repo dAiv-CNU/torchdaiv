@@ -33,17 +33,23 @@ class EmotionDataset(Dataset):
         NEUTRAL = 0
         NEGATIVE = -1
 
+        @staticmethod
+        def __new__(cls, *args, **kwargs):
+            args = list(args)
+            args[0] = 1 if args[0] >= 1 else -1 if args[0] <= -1 else 0
+            return super().__new__(cls, *args, **kwargs)
+
         def __add__(self, other):
-            return EmotionDataset.Emotion(super().__add__(other % 2) % 2)
+            return EmotionDataset.Emotion(super().__add__(other))
 
         def __sub__(self, other):
-            return EmotionDataset.Emotion(super().__sub__(other % 2) % 2)
+            return EmotionDataset.Emotion(super().__sub__(other))
 
         def __mul__(self, other):
-            return EmotionDataset.Emotion(super().__mul__(other % 2) % 2)
+            return EmotionDataset.Emotion(super().__mul__(other))
 
         def __truediv__(self, other):
-            return EmotionDataset.Emotion(super().__truediv__(other % 2) % 2)
+            return EmotionDataset.Emotion(super().__truediv__(other))
 
         def __repr__(self):
             if self >= self.POSITIVE:
