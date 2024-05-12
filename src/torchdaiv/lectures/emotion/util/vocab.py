@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from typing import Callable
+from collections import Counter
 
 
 class Vocabulary(dict):
@@ -6,30 +9,41 @@ class Vocabulary(dict):
     UNK = "<UNK>"
 
     def __init__(self):
-        super().__init__()
-        self.vocab = {0: "<PAD>", 1: "<UNK>"}
+        super().__init__({self.PAD: 0, self.UNK: 1})
 
-    def update(self, data: list | dict):
-        if isinstance(data, list):
-            for d in data:
-                self.update(d)
-        elif isinstance(data, dict):
-            for k, v in data.items():
-                self.update(v)
+    def __setitem__(self, key, index):
+        if not isinstance(key, str):
+            raise ValueError("Key type must be str.")
+        super().__setitem__(key, index)
+
+    def update(self, data: list[str] | Vocabulary):
+        if isinstance(data, list) or isinstance(data, Vocabulary):
+            for key in data:
+                if key not in self:
+                    self[key] = len(self)
         else:
-            if data not in self.vocab.values():
-                self.vocab[len(self.vocab)] = data
-        return data
+            raise ValueError("Input type must be list or Vocabulary.")
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            return self[item]
+        else:
+            raise ValueError("Input type must be str.")
 
     def get(self, key, default=1):
-        return self.vocab[key] if key in self else default
+        return super().get(key, default)
 
 
 def vocabulary_creator() -> tuple[Vocabulary, Callable]:
     new_vocab = Vocabulary()
 
-    def to_vocabulary(data: list):
-        new_vocab.update(data)
+    def convert(data: list[str], minimum_frequency=5) -> list[str]:
+        data = [word for line in data for word in line.split()]
+        frequency_filtered = filter(lambda x: x[1] > minimum_frequency, Counter(data))
+        return list(set(frequency_filtered))
+
+    def to_vocabulary(data: list[str]):
+        new_vocab.update(convert(data))
         return data
 
     return new_vocab, to_vocabulary
