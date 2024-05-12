@@ -43,8 +43,14 @@ def vocabulary_creator(minimum_frequency=5) -> tuple[Vocabulary, Callable]:
         frequency_filtered = filter(lambda x: frequency[x] >= minimum_frequency, frequency)
         return list(set(frequency_filtered))
 
-    def to_vocabulary(data: list[str]):
-        new_vocab.update(convert(data))
-        return data
+    def to_vocabulary(data: list[str] | Callable):
+        def wrapper(dt):
+            new_vocab.update(convert(dt))
+            return dt
+
+        if isinstance(data, Callable):
+            return lambda x: data(wrapper(x))
+        else:
+            return wrapper(data)
 
     return new_vocab, to_vocabulary
