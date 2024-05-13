@@ -1,13 +1,13 @@
 import torch
-from torch import optim
+from torch import optim, nn
 from torch.nn import *
 
 from tqdm.notebook import tqdm
 
 
-class MyModel(Module):
+class Module(nn.Module):
     def __init__(self):
-        super(MyModel, self).__init__()
+        super(Module, self).__init__()
         self.device = "cpu"
         self.train_dataloader = ()
         self.test_dataloader = ()
@@ -36,15 +36,15 @@ class MyModel(Module):
         self.train_dataloader = train_dataloader
         self.test_dataloader = test_dataloader
 
-    def init_optimizer(self, lr=0.01):
+    def init_optimizer(self, lr=0.0001):
         self.optimizer = optim.AdamW(self.parameters(), lr=lr)
         self.criterion = CrossEntropyLoss()
 
-    def train(self, epochs, optimizer_init=False, lr=0.01):
+    def train(self, epochs, optimizer_init=False, lr=0.0001):
         if optimizer_init or self.optimizer is None:
             self.init_optimizer(lr)
 
-        self.train()
+        super().train()
         datalen = len(self.train_dataloader)
 
         for epoch in tqdm(range(epochs), desc="Running epochs"):

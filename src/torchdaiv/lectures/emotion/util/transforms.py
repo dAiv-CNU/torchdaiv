@@ -9,7 +9,7 @@ from matplotlib import pyplot as plt
 
 def to_tensor(vocabulary: Vocabulary):
     def convert_to_tensor(dataset: list[str]):
-        tensor_list = [torch.tensor([vocabulary.get(word, 0) for word in split_string(data)], dtype=torch.float16)/len(vocabulary) for data in dataset]
+        tensor_list = [torch.tensor([vocabulary.get(word, 0) for word in split_string(data)])/len(vocabulary) for data in dataset]
         length_list = [len(tensor) for tensor in tensor_list]
         frequency = Counter(length_list)
         plt.figure(figsize=(6, 3))
