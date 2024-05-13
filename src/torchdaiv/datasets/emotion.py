@@ -95,15 +95,18 @@ class EmotionDataset(Dataset):
         self.data = self.sentiment_text if sentiment else self.general_text
         self.label = self.sentiment_label if sentiment else self.general_label
 
-        self._transform(transform, target_transform)
+        self.transform(transform, target_transform)
 
-    def __getitem__(self, item):
-        return self.data[item], self.label[item]
+    def __getitem__(self, item: int | tuple[int, int]):
+        if isinstance(item, int) or isinstance(item, tuple):
+            return self.data[item], self.label[item]
+        else:
+            raise ValueError("Unsupported item type. Only int or tuple[int, int] is supported.")
 
     def __len__(self):
         return len(self.data)
 
-    def _transform(self, transform=None, target_transform=None):
+    def transform(self, transform=None, target_transform=None):
         if transform is not None:
             self.data = transform(self.data)
 

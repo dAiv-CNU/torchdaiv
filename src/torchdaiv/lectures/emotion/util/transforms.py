@@ -1,0 +1,26 @@
+from .vocabulary import Vocabulary, split_string
+
+from collections import Counter
+
+import torch
+from torch.nn.utils.rnn import pad_sequence
+from matplotlib import pyplot as plt
+
+
+def to_tensor(vocabulary: Vocabulary):
+    def convert_to_tensor(dataset: list[str]):
+        tensor_list = [torch.tensor([vocabulary.get(word, 0) for word in split_string(data)], dtype=torch.float16)/len(vocabulary) for data in dataset]
+        length_list = [len(tensor) for tensor in tensor_list]
+        frequency = Counter(length_list)
+        plt.figure(figsize=(6, 3))
+        plt.bar(*zip(*sorted(frequency.items())))
+        plt.show()
+        padded_tensor_list = pad_sequence(tensor_list, batch_first=True)
+        return padded_tensor_list
+    return convert_to_tensor
+
+
+def size_to(to=30):
+    def shrink(data):
+        return [tensor[:to] for tensor in data]
+    return shrink
