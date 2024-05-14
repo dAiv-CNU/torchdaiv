@@ -2,6 +2,8 @@ import torch
 from torch import optim, nn
 from torch.nn import *
 
+from ...datasets import EmotionDataset
+
 from tqdm.notebook import tqdm
 
 
@@ -41,40 +43,88 @@ class Module(nn.Module):
         self.criterion = CrossEntropyLoss()
 
     def train(self, epochs, optimizer_init=False, lr=0.0001):
+        """
+        Train the model
+
+        :param epochs: epochs to train
+        :param optimizer_init: if True, initialize optimizer
+        :param lr: Set learning rate, only used when optimizer_init is True
+        """
+
         if optimizer_init or self.optimizer is None:
             self.init_optimizer(lr)
 
         super().train()
         datalen = len(self.train_dataloader)
 
-        for epoch in tqdm(range(epochs), desc="Running epochs"):
-            running_loss = 0.0
+        for epoch in range(epochs):
+            running_acc, running_loss = 0.0, 0.0
 
             for i, (inputs, labels) in enumerate(tqdm(self.train_dataloader, desc=f"Epoch {epoch+1}")):
                 self.optimizer.zero_grad()
 
-                outputs = self(inputs.to(self.device))
+                inputs: torch.Tensor = inputs.to(self.device)
+                labels: torch.Tensor = labels.to(self.device)
 
-                loss = self.criterion(outputs, labels.to(self.device))
+                outputs = self(inputs)
+                _, predicted = torch.max(outputs.data, 1)
+
+                loss = self.criterion(outputs, labels)
 
                 loss.backward()
                 self.optimizer.step()
+
                 running_loss += loss.item()
+                running_acc += (predicted == torch.max(labels, 1)[1]).float().mean().item()
 
-                print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{i+1}/{datalen}], Loss: {running_loss/(i+1):.4f}", end="")
+                inputs, labels = inputs.detach(), labels.detach()
+                inputs, labels = inputs.cpu(), labels.cpu()
 
-            print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{datalen}/{datalen}], Loss: {running_loss/datalen:.4f}")
+                print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{i+1}/{datalen}], Accuracy: {running_acc/(i+1):.6%}, Loss: {running_loss/(i+1):.8f}", end="")
+
+            print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{datalen}/{datalen}], Accuracy: {running_acc/datalen:.6%}, Loss: {running_loss/datalen:.8f}")
 
     def evaluate(self):
         self.eval()
-        correct = 0
-        total = 0
+        datalen = len(self.test_dataloader)
+        running_acc, running_loss = 0.0, 0.0
 
         with torch.no_grad():
-            for inputs, labels in self.test_dataloader:
-                outputs = self(inputs.to(self.device))
-                _, predicted = torch.max(outputs.data, 1)
-                total += labels.size(0)
-                correct += (predicted == labels.to(self.device)).sum().item()
+            for i, (inputs, labels) in enumerate(tqdm(self.test_dataloader, desc=f"Performance Test")):
+                inputs: torch.Tensor = inputs.to(self.device)
+                labels: torch.Tensor = labels.to(self.device)
 
-        print(f"Accuracy: {100 * correct / total}")
+                outputs = self(inputs)
+                _, predicted = torch.max(outputs.data, 1)
+
+                running_loss += self.criterion(outputs, labels).item()
+                running_acc += (predicted == torch.max(labels, 1)[1]).float().mean().item()
+
+                inputs, labels = inputs.cpu(), labels.cpu()
+
+                print(f"\rAccuracy: {running_acc/(i+1):.6%}, Loss: {running_loss/(i+1):.8f}", end="")
+
+        print(f"\rAccuracy: {running_acc/datalen:.6%}, Loss: {running_loss/datalen:.8f}")
+
+    def pipeline(self, message: str, transform: list | tuple) -> EmotionDataset.Emotion:
+        if not isinstance(transform, list) and not isinstance(transform, tuple):
+            transform = [transform]
+
+        message = [message]
+        for t in transform:
+            message = t(message)
+        message = message[0]
+
+        if not isinstance(message, torch.Tensor):
+            raise TypeError("Transform function must return torch.Tensor evantually.")
+
+        self.eval()
+        with torch.no_grad():
+            message: torch.Tensor = message.unsqueeze(0).to(self.device)
+
+            outputs = self(message)
+            _, predicted = torch.max(outputs.data, 1)
+
+            message = message.cpu()
+
+            return EmotionDataset.Emotion(predicted.item()*-1+1)

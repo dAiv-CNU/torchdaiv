@@ -52,6 +52,9 @@ class EmotionDataset(Dataset):
         def __truediv__(self, other):
             return EmotionDataset.Emotion(super().__truediv__(other))
 
+        def toint(self) -> int:
+            return 0 + self
+
         def __repr__(self):
             if self >= self.POSITIVE:
                 return "긍정"
