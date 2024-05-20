@@ -79,6 +79,7 @@ class Module(nn.Module):
 
                 inputs, labels = inputs.detach(), labels.detach()
                 inputs, labels = inputs.cpu(), labels.cpu()
+                del inputs, labels
 
                 print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{i+1}/{datalen}], Accuracy: {running_acc/(i+1):.6%}, Loss: {running_loss/(i+1):.8f}", end="")
 
@@ -101,6 +102,7 @@ class Module(nn.Module):
                 running_acc += (predicted == torch.max(labels, 1)[1]).float().mean().item()
 
                 inputs, labels = inputs.cpu(), labels.cpu()
+                del inputs, labels
 
                 print(f"\rAccuracy: {running_acc/(i+1):.6%}, Loss: {running_loss/(i+1):.8f}", end="")
 
@@ -116,7 +118,7 @@ class Module(nn.Module):
         message = message[0]
 
         if not isinstance(message, torch.Tensor):
-            raise TypeError("Transform function must return torch.Tensor evantually.")
+            raise TypeError("Transform function must return torch.Tensor eventually.")
 
         self.eval()
         with torch.no_grad():
@@ -125,6 +127,9 @@ class Module(nn.Module):
             outputs = self(message)
             _, predicted = torch.max(outputs.data, 1)
 
+            outputs = outputs.cpu()
+            del outputs
             message = message.cpu()
+            del message
 
             return EmotionDataset.Emotion(predicted.item()*-1+1)
