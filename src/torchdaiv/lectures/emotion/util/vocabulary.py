@@ -4,6 +4,7 @@ from typing import Callable
 from collections import Counter
 
 import re
+import os
 
 
 def split_string(s):
@@ -60,3 +61,27 @@ def vocabulary_creator(minimum_frequency=5) -> tuple[Vocabulary, Callable]:
             return wrapper(data)
 
     return new_vocab, to_vocabulary
+
+
+class KoNLPyTokenizer:
+    def __init__(self, java_path=None):
+        if java_path:
+            os.environ['JAVA_HOME'] = java_path
+        elif 'JAVA_HOME' not in os.environ:
+            os.environ['JAVA_HOME'] = input("JAVA_HOME is not specified. Please enter your Java path: ")
+
+        from konlpy.tag import Okt
+        self.tokenizer = Okt()
+
+    def morphs(self, data: list[str]):
+        return [self.tokenizer.morphs(line) for line in data]
+
+    def nouns(self, data: list[str]):
+        return [self.tokenizer.nouns(line) for line in data]
+
+    def phrases(self, data: list[str]):
+        return [self.tokenizer.phrases(line) for line in data]
+
+
+#class WordVector(Vocabulary):
+
