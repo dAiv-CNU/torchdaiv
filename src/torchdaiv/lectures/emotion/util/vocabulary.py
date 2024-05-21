@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Callable
 from collections import Counter
 
+import requests
 import re
 import os
 
@@ -65,22 +66,45 @@ def vocabulary_creator(minimum_frequency=5) -> tuple[Vocabulary, Callable]:
 
 class KoNLPyTokenizer:
     def __init__(self, java_path=None):
-        if java_path:
-            os.environ['JAVA_HOME'] = java_path
-        elif 'JAVA_HOME' not in os.environ:
-            os.environ['JAVA_HOME'] = input("JAVA_HOME is not specified. Please enter your Java path: ")
+        if java_path is not None:
+            if java_path:
+                os.environ['JAVA_HOME'] = java_path
+            elif 'JAVA_HOME' not in os.environ:
+                os.environ['JAVA_HOME'] = input("JAVA_HOME is not specified. Please enter your Java path: ")
 
         from konlpy.tag import Okt
         self.tokenizer = Okt()
 
-    def morphs(self, data: list[str]):
-        return [self.tokenizer.morphs(line) for line in data]
+        self.morphs = lambda data: [self.tokenizer.morphs(line) for line in data]
+        self.nouns = lambda data: [self.tokenizer.nouns(line) for line in data]
+        self.phrases = lambda data: [self.tokenizer.phrases(line) for line in data]
 
-    def nouns(self, data: list[str]):
-        return [self.tokenizer.nouns(line) for line in data]
+    @classmethod
+    def from_pretrained(cls, dataset, *args, transform=None, **kwargs):
+        if transform is cls.morphs:
+            transform = lambda data: cls._dl_pretrained(dataset.Pretrained(*args, **kwargs)['morphs'])
+        elif transform is cls.nouns:
+            transform = lambda data: cls._dl_pretrained(dataset.Pretrained(*args, **kwargs)['nouns'])
+        elif transform is cls.phrases:
+            transform = lambda data: cls._dl_pretrained(dataset.Pretrained(*args, **kwargs)['phrases'])
 
-    def phrases(self, data: list[str]):
-        return [self.tokenizer.phrases(line) for line in data]
+        return dataset(*args, transform=transform, **kwargs)
+
+    @classmethod
+    def morphs(cls, data: list[str]):
+        pass
+
+    @classmethod
+    def nouns(cls, data: list[str]):
+        pass
+
+    @classmethod
+    def phrases(cls, data: list[str]):
+        pass
+
+    @staticmethod
+    def _dl_pretrained(path):
+        return requests.get(path).json()
 
 
 #class WordVector(Vocabulary):

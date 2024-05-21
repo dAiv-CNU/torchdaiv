@@ -28,6 +28,39 @@ class EmotionDataset(Dataset):
     )
     work_dir = "extracted"
 
+    class Pretrained:
+        url_prefix = "https://raw.githubusercontent.com/dAiv-CNU/torchdaiv/dataset/AI_HUB/%EC%86%8D%EC%84%B1%EA%B8%B0%EB%B0%98%20%EA%B0%90%EC%A0%95%EB%B6%84%EC%84%9D%20%EB%8D%B0%EC%9D%B4%ED%84%B0/"
+
+        def __new__(cls, train=True, sentiment=False, *args, **kwargs):
+            class General:
+                train = dict(
+                    morphs=cls.url_prefix+"train_dataset_morphs.json",
+                    nouns=cls.url_prefix+"train_dataset_nouns.json",
+                    phrases=cls.url_prefix+"train_dataset_phrases.json"
+                )
+
+                test = dict(
+                    morphs=cls.url_prefix+"test_dataset_morphs.json",
+                    nouns=cls.url_prefix+"test_dataset_nouns.json",
+                    phrases=cls.url_prefix+"test_dataset_phrases.json"
+                )
+
+            class Sentiment:
+                train = dict(
+                    morphs=cls.url_prefix+"train_dataset_morphs.json",
+                    nouns=cls.url_prefix+"train_dataset_nouns.json",
+                    phrases=cls.url_prefix+"train_dataset_phrases.json"
+                )
+
+                test = dict(
+                    morphs=cls.url_prefix+"test_dataset_morphs.json",
+                    nouns=cls.url_prefix+"test_dataset_nouns.json",
+                    phrases=cls.url_prefix+"test_dataset_phrases.json"
+                )
+
+            target = Sentiment if sentiment else General
+            return target.train if train else target.test
+
     class Emotion(int):
         POSITIVE = 1
         NEUTRAL = 0
