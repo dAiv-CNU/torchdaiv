@@ -1,1 +1,1 @@
-from .src.torchdaiv import datasets, lecture
+from .src.torchdaiv import datasets, lectures

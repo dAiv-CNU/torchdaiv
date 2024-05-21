@@ -8,9 +8,12 @@ from torch.nn.utils.rnn import pad_sequence
 from matplotlib import pyplot as plt
 
 
-def to_tensor(vocabulary: Vocabulary, show_graph=False):
+def to_tensor(vocabulary: Vocabulary | dict, show_graph=False, tokenizer=split_string):
+    if tokenizer is None:
+        tokenizer = lambda x: x
+
     def convert_to_tensor(dataset: list[str]):
-        tensor_list = [torch.tensor([vocabulary.get(word, 0) for word in split_string(data)])/len(vocabulary) for data in dataset]
+        tensor_list = [torch.tensor([vocabulary.get(word, 1) for word in tokenizer(data)])/len(vocabulary) for data in dataset]
         length_list = [len(tensor) for tensor in tensor_list]
         frequency = Counter(length_list)
         if show_graph:
