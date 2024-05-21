@@ -67,15 +67,15 @@ class Module(nn.Module):
                 labels: torch.Tensor = labels.to(self.device)
 
                 outputs = self(inputs)
-                _, predicted = torch.max(outputs.data, 1)
+                _, predicted = torch.max(outputs.data, 0)
 
-                loss = self.criterion(outputs, labels)
+                loss = self.criterion(outputs.view(labels.size(0), 3), labels)
 
                 loss.backward()
                 self.optimizer.step()
 
                 running_loss += loss.item()
-                running_acc += (predicted == torch.max(labels, 1)[1]).float().mean().item()
+                running_acc += (predicted == torch.max(labels, 0)[1]).float().mean().item()
 
                 inputs, labels = inputs.detach(), labels.detach()
                 inputs, labels = inputs.cpu(), labels.cpu()
@@ -96,10 +96,10 @@ class Module(nn.Module):
                 labels: torch.Tensor = labels.to(self.device)
 
                 outputs = self(inputs)
-                _, predicted = torch.max(outputs.data, 1)
+                _, predicted = torch.max(outputs.view(labels.size(0), 3), 0)
 
                 running_loss += self.criterion(outputs, labels).item()
-                running_acc += (predicted == torch.max(labels, 1)[1]).float().mean().item()
+                running_acc += (predicted == torch.max(labels, 0)[1]).float().mean().item()
 
                 inputs, labels = inputs.cpu(), labels.cpu()
                 del inputs, labels
@@ -125,7 +125,7 @@ class Module(nn.Module):
             message: torch.Tensor = message.unsqueeze(0).to(self.device)
 
             outputs = self(message)
-            _, predicted = torch.max(outputs.data, 1)
+            _, predicted = torch.max(outputs.data, 0)
 
             outputs = outputs.cpu()
             del outputs
