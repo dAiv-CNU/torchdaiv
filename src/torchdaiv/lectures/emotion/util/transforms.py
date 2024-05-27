@@ -13,9 +13,11 @@ def to_tensor(vocabulary: Vocabulary | dict, show_graph=False, normalize=True, t
         tokenizer = lambda x: x
 
     def convert_to_tensor(dataset: list[str]):
-        tensor_list = [torch.tensor([vocabulary.get(word, 1) for word in tokenizer(data)]) for data in dataset]
         if normalize:
-            tensor_list /= len(vocabulary)
+            tensor_list = [torch.tensor([vocabulary.get(word, 1) for word in tokenizer(data)]) / len(vocabulary) for data in dataset]
+        else:
+            tensor_list = [torch.tensor([vocabulary.get(word, 1) for word in tokenizer(data)]) for data in dataset]
+
         length_list = [len(tensor) for tensor in tensor_list]
         frequency = Counter(length_list)
         if show_graph:

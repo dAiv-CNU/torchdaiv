@@ -42,7 +42,7 @@ class Module(nn.Module):
         self.optimizer = optim.AdamW(self.parameters(), lr=lr)
         self.criterion = CrossEntropyLoss()
 
-    def train(self, epochs, optimizer_init=False, lr=0.0001):
+    def train(self, epochs, optimizer_init=False, lr=0.0001, loggig_freq=5):
         """
         Train the model
 
@@ -55,7 +55,7 @@ class Module(nn.Module):
             self.init_optimizer(lr)
 
         super().train()
-        datalen = len(self.train_dataloader)
+        dlen = len(self.train_dataloader)
 
         for epoch in range(epochs):
             running_acc, running_loss = 0.0, 0.0
@@ -66,28 +66,25 @@ class Module(nn.Module):
                 inputs: torch.Tensor = inputs.to(self.device)
                 labels: torch.Tensor = labels.to(self.device)
 
-                outputs = self(inputs)
-                _, predicted = torch.max(outputs.data, 0)
+                outputs = self(inputs).view(*labels.shape)
 
-                loss = self.criterion(outputs.view(labels.size(0), 3), labels)
+                _, predicted = torch.max(outputs, 1)
+
+                loss = self.criterion(outputs, labels)
 
                 loss.backward()
                 self.optimizer.step()
 
                 running_loss += loss.item()
-                running_acc += (predicted == torch.max(labels, 0)[1]).float().mean().item()
+                running_acc += (predicted == torch.max(labels, 1)[1]).float().mean().item()
 
-                inputs, labels = inputs.detach(), labels.detach()
-                inputs, labels = inputs.cpu(), labels.cpu()
-                del inputs, labels
+                print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{i+1}/{dlen}], Accuracy: {running_acc/(i+1):.6%}, Loss: {running_loss/(i+1):.8f}", end="")
 
-                print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{i+1}/{datalen}], Accuracy: {running_acc/(i+1):.6%}, Loss: {running_loss/(i+1):.8f}", end="")
-
-            print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{datalen}/{datalen}], Accuracy: {running_acc/datalen:.6%}, Loss: {running_loss/datalen:.8f}")
+            print(f"\rEpoch [{epoch+1}/{epochs}], Step: [{dlen}/{dlen}], Accuracy: {running_acc/dlen:.6%}, Loss: {running_loss/dlen:.8f}")
 
     def evaluate(self):
         self.eval()
-        datalen = len(self.test_dataloader)
+        dlen = len(self.test_dataloader)
         running_acc, running_loss = 0.0, 0.0
 
         with torch.no_grad():
@@ -95,18 +92,15 @@ class Module(nn.Module):
                 inputs: torch.Tensor = inputs.to(self.device)
                 labels: torch.Tensor = labels.to(self.device)
 
-                outputs = self(inputs)
-                _, predicted = torch.max(outputs.view(labels.size(0), 3), 0)
+                outputs = self(inputs).view(*labels.shape)
+                _, predicted = torch.max(outputs, 1)
 
                 running_loss += self.criterion(outputs, labels).item()
-                running_acc += (predicted == torch.max(labels, 0)[1]).float().mean().item()
-
-                inputs, labels = inputs.cpu(), labels.cpu()
-                del inputs, labels
+                running_acc += (predicted == torch.max(labels, 1)[1]).float().mean().item()
 
                 print(f"\rAccuracy: {running_acc/(i+1):.6%}, Loss: {running_loss/(i+1):.8f}", end="")
 
-        print(f"\rAccuracy: {running_acc/datalen:.6%}, Loss: {running_loss/datalen:.8f}")
+        print(f"\rAccuracy: {running_acc/dlen:.6%}, Loss: {running_loss/dlen:.8f}")
 
     def pipeline(self, message: str, transform: list | tuple) -> EmotionDataset.Emotion:
         if not isinstance(transform, list) and not isinstance(transform, tuple):
@@ -125,11 +119,9 @@ class Module(nn.Module):
             message: torch.Tensor = message.unsqueeze(0).to(self.device)
 
             outputs = self(message)
-            _, predicted = torch.max(outputs.data, 0)
+            if len(outputs.shape) > 2:
+                outputs = outputs.squeeze()
 
-            outputs = outputs.cpu()
-            del outputs
-            message = message.cpu()
-            del message
+            _, predicted = torch.max(outputs, 1)
 
             return EmotionDataset.Emotion(predicted.item()*-1+1)
