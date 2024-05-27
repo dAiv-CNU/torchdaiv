@@ -19,6 +19,7 @@ konlpy = "^0.6.0"
 torch = "^2.3.0"
 torchvision = "^0.18.0"
 torchtext = "^0.18.0"
+jupyter = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core"]
