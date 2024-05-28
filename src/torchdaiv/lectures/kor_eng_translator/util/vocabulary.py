@@ -5,6 +5,8 @@ from torchtext.vocab import vocab
 
 from collections import Counter, OrderedDict
 
+import spacy
+
 
 class Token:
     UNK = '<unk>'
@@ -20,3 +22,11 @@ def build_vocab(raw_dataset, minimum_frequency=1, tokenizer=lambda x: x, special
     sorted_by_freq_tuples = sorted(frequency.items(), key=lambda x: x[1], reverse=True)
     ordered_dict = OrderedDict(sorted_by_freq_tuples)
     return vocab(ordered_dict, min_freq=minimum_frequency, specials=specials, special_first=True)
+
+
+def load_tokenizer(backend=spacy, language=""):
+    """
+    토큰화 방식: 띄어쓰기 기준으로 토큰화, + => +## 으로 분리
+    """
+    tokenizer = backend.load(language)
+    return lambda x: [tk for token in tokenizer(x) for tk in token.lemma_.replace("+", "+##").split('+')]

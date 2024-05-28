@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "torchdaiv"
-version = "1.2.3"
+version = "1.2.4"
 description = "PyTorch Wrapper for dAiv's lecture"
 authors = ["dAiv <cnudaiv@gmail.com>"]
 license = "MIT License"
