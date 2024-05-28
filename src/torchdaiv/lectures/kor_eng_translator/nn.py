@@ -194,10 +194,14 @@ def train_loop(model, dataset, epochs, encoder_optimizer, decoder_optimizer, cri
 def translate(model, message, transform):
     model.eval()
 
+    device = model.device
+    model.encoder.to(device)
+    model.decoder.to(device)
+
     with torch.no_grad():
         message = transform([message])
-        last_hidden = model.encoder(message.to(model.device))
-        model.decoder.generate(last_hidden)
+        last_hidden = model.encoder(message.to(device))
+        model.decoder.generate(last_hidden.to(device))
 
 
 class Module(BasicModule):
