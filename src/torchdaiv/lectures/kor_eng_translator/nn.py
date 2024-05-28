@@ -16,7 +16,7 @@ BOS = vocabulary.Token.BOS
 EOS = vocabulary.Token.EOS
 PAD = vocabulary.Token.PAD
 
-ko_vobab = None
+ko_vocab = None
 en_vocab = None
 input_vocab = None
 word_2_idx = None
@@ -24,7 +24,7 @@ idx_2_word = None
 
 
 def set_vocabulary(ko, en):
-    global input_vocab, word_2_idx, idx_2_word
+    global input_vocab, word_2_idx, idx_2_word, ko_vocab, en_vocab
     ko_vocab = ko
     en_vocab = en
     input_vocab = ko.get_stoi()
