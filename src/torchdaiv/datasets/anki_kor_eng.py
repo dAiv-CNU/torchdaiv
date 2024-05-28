@@ -32,8 +32,9 @@ class AnkiKorEngDataset(Dataset):
             self._download(download_root=root)
             self._raw_data, self.info = self._load_data(data_dir=join(root, self.base_dir))
 
-            #self.raw_eng, self.raw_kor = zip(*self._raw_data)
-            for eng, kor in zip(*self._raw_data):
+            raw_eng, raw_kor = zip(*self._raw_data)
+
+            for eng, kor in zip(raw_eng, raw_kor):
                 if "자살" in kor or "죽" in kor:
                     continue
                 self.raw_eng.append(eng)
