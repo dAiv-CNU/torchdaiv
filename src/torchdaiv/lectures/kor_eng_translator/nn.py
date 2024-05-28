@@ -196,7 +196,7 @@ def translate(model, message, transform):
 
     with torch.no_grad():
         message = transform([message])
-        last_hidden = model.encoder(message)
+        last_hidden = model.encoder(message.to(model.device))
         model.decoder.generate(last_hidden)
 
 
