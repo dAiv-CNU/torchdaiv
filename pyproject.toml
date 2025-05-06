@@ -1,27 +1,25 @@
-[tool.poetry]
+[build-system]
+requires = ["flit_core>=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
 name = "torchdaiv"
 version = "1.2.4"
 description = "PyTorch Wrapper for dAiv's lecture"
-authors = ["dAiv <cnudaiv@gmail.com>"]
-license = "MIT License"
+authors = [{name = "dAiv", email = "cnudaiv@gmail.com"}]
+license = {file = "LICENSE"}
 readme = "README.md"
-packages = [
-    {include = "torchdaiv", from = "src"}
+requires-python = ">=3.9, <3.14"
+dependencies = [
+    "tqdm>=4.66.4",
+    "rich>=13.7.1",
+    "scipy>=1.12.0",
+    "gensim>=4.3.2",
+    "konlpy>=0.6.0",
+    "torchvision>=0.18.0",
+    "torchtext>=0.18.0",
+    "spacy>=3.7.4"
 ]
 
-[tool.poetry.dependencies]
-python = "^3.9"
-tqdm = "^4.66.4"
-rich = "^13.7.1"
-scipy = "1.12.0"
-gensim = "^4.3.2"
-konlpy = "^0.6.0"
-torch = "^2.3.0"
-torchvision = "^0.18.0"
-torchtext = "^0.18.0"
-jupyter = "^1.0.0"
-spacy = "^3.7.4"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.urls]
+Home = "https://github.com/dAiv-CNU/torchdaiv"
