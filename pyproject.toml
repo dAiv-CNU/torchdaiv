@@ -11,6 +11,14 @@ license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.9, <3.14"
 dependencies = [
+    "tqdm>=4.66.4",
+    "rich>=13.7.1",
+    "scipy>=1.12.0",
+    "gensim>=4.3.2",
+    "konlpy>=0.6.0",
+    "torchvision>=0.18.0",
+    "torchtext>=0.18.0",
+    "spacy>=3.7.4"
 ]
 
 [project.urls]
