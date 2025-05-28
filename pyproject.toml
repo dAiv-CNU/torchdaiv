@@ -18,7 +18,6 @@ dependencies = [
     "konlpy",
     "torch",
     "torchvision",
-    "torchtext",
     "spacy"
 ]
 

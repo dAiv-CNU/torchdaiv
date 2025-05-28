@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import torchtext; torchtext.disable_torchtext_deprecation_warning()
 from torchtext.vocab import vocab
 
 from collections import Counter, OrderedDict
