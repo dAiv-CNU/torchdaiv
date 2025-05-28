@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 
 import torch
 import torch.nn as nn
+from torchtext.utils import _log_class_usage
 
 
 class Vocab(nn.Module):
@@ -15,6 +16,7 @@ class Vocab(nn.Module):
     def __init__(self, vocab) -> None:
         super(Vocab, self).__init__()
         self.vocab = vocab
+        _log_class_usage(__class__)
 
     @property
     def is_jitable(self):
