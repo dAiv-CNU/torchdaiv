@@ -1,18 +1,10 @@
 from __future__ import annotations
 
-from .torchtext.vocab import vocab
+from .torchtext.vocab import vocab, Token
 
 from collections import Counter, OrderedDict
 
 import spacy
-
-
-class Token:
-    UNK = '<unk>'
-    PAD = '<pad>'
-    BOS = '<bos>'
-    EOS = '<eos>'
-    DEFAULT = [PAD, UNK, BOS, EOS]
 
 
 def build_vocab(raw_dataset, minimum_frequency=1, tokenizer=lambda x: x, specials=Token.DEFAULT):
