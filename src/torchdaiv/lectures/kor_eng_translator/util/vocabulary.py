@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from torchtext.vocab import vocab
+from .torchtext.vocab import vocab
 
 from collections import Counter, OrderedDict
 
