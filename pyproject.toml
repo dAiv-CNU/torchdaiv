@@ -18,7 +18,9 @@ dependencies = [
     "konlpy",
     "torch",
     "torchvision",
-    "spacy"
+    "spacy",
+    "tokenizers",
+    "huggingface-hub"
 ]
 
 [project.urls]
