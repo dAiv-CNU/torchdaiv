@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "torchdaiv"
-version = "1.3.0"
+version = "1.4.0"
 description = "PyTorch Wrapper for dAiv's lecture"
 authors = [{name = "dAiv", email = "cnudaiv@gmail.com"}]
 license = {file = "LICENSE"}
