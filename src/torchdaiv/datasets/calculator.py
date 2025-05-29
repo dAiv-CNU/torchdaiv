@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 
 
 class FixedLengthCalculatorDataset(Dataset):
-    operators = ['+', '-', '*', '/']
+    operators = ['+', '+', '+', '-', '-', '-', '*', '/']
 
     def __init__(self, size: int = 10000, max_length: Union[int, int] = [3, 4]):
         self.size = size
