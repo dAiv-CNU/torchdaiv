@@ -13,12 +13,12 @@ requires-python = ">=3.9, <3.14"
 dependencies = [
     "tqdm",
     "rich",
-    "scipy",
-    "gensim",
-    "konlpy",
-    "torch",
-    "torchvision",
-    "spacy",
+    #"scipy",
+    #"gensim",
+    #"konlpy",
+    #"torch",
+    #"torchvision",
+    #"spacy",
     "tokenizers",
     "transformers",
     "huggingface-hub"
